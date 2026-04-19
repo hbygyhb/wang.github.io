@@ -1,0 +1,1389 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>找次品互动课件</title>
+<style>
+:root{
+  --primary: #165DFF; /* 主色调：蓝色 */
+  --primary-light: #4080FF;
+  --primary-dark: #0E42D2;
+  --success: #00B42A; /* 成功色：绿色 */
+  --danger: #F53F3F;  /* 危险色：红色 */
+  --text: #1D2129;    /* 文本色：深灰 */
+  --text-light: #4E5969; /* 次要文本 */
+  --bg: #F2F3F5;      /* 背景色 */
+  --card-bg: #ffffff; /* 卡片背景 */
+  --border: #E5E6EB;  /* 边框色 */
+  --left-pan: #165DFF; /* 左盘色：主蓝 */
+  --right-pan: #4080FF; /* 右盘色：浅蓝 */
+  --item-color: #FF7D00;   /* 物品色：原橙色 */
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans",sans-serif;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  line-height:1.5;
+  padding:0 0 20px;
+}
+.app{
+  width:min(1200px,96vw);
+  padding:20px;
+  min-height:calc(100vh - 40px);
+  max-height:calc(100vh - 40px);
+  overflow:auto;
+}
+.header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:24px;
+  padding-bottom:16px;
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+.brand{
+  font-weight:700;
+  letter-spacing:.5px;
+  font-size:1.8rem;
+  color:white;
+  background:var(--primary);
+  padding:12px 24px;
+  border-radius:12px;
+  width:100%;
+  text-align:left;
+}
+.card{
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  box-shadow:var(--shadow);
+  transition:all 0.3s ease;
+}
+.card:hover{
+  box-shadow:var(--shadow-hover);
+}
+label{
+  font-size:14px;
+  color:var(--text-light);
+  display:block;
+  margin-bottom:8px;
+  font-weight:500;
+}
+input,select{
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--card-bg);
+  color:var(--text);
+  font-size:16px;
+  transition:border-color 0.2s ease;
+}
+input:focus,select:focus{
+  outline:none;
+  border-color:var(--primary);
+  box-shadow:0 0 0 2px rgba(22, 93, 255, 0.2);
+}
+button{
+  cursor:pointer;
+  transition:all 0.2s ease;
+  padding:12px 18px;
+  border-radius:10px;
+  font-weight:500;
+  font-size:16px;
+}
+button:hover{
+  transform:translateY(-1px);
+}
+button:active{
+  transform:translateY(1px);
+}
+button.primary{
+  background:linear-gradient(180deg,var(--primary-light),var(--primary-dark));
+  border:none;
+  color:#fff;
+}
+button.primary:hover{
+  box-shadow:0 4px 12px rgba(22, 93, 255, 0.3);
+}
+button.warn{
+  /* 警告按钮改为蓝色系 */
+  background:linear-gradient(180deg,#FF6B6B,#E03A3A);
+  border:none;
+  color:#fff;
+}
+button.warn:hover{
+  box-shadow:0 4px 12px rgba(245, 63, 63, 0.3);
+}
+button:not(.primary):not(.warn){
+  background:var(--card-bg);
+  border:1px solid var(--primary); /* 普通按钮边框蓝色 */
+  color:var(--primary); /* 普通按钮文字蓝色 */
+}
+button:not(.primary):not(.warn):hover{
+  background:rgba(22, 93, 255, 0.05); /* 普通按钮hover背景 */
+}
+.pool{
+  height: 480px;
+  transition:all 0.2s ease;
+  overflow:hidden;
+}
+.items{
+  display:flex;
+  gap:15px;
+  flex-wrap:wrap;
+  overflow-y:auto;
+  padding:15px;
+  padding-bottom:10px;
+  height: calc(100% - 50px);
+  justify-content:flex-start;
+  align-content:flex-start;
+}
+.item{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: var(--card-bg);
+  color:#111;
+  font-weight:700;
+  font-size:18px;
+  border:1px solid rgba(0,0,0,.1);
+  box-shadow: 0 3px 6px rgba(0,0,0,.1);
+  user-select:none;
+  transition:all 0.2s ease;
+  cursor:pointer;
+  position: relative;
+}
+.item img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.item .item-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  text-shadow: 0 0 3px #fff;
+}
+.item:hover{
+  transform:scale(1.05);
+}
+.item.selected{
+  outline:2px solid var(--primary);
+  transform:translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0,0,0,.15);
+}
+.item.odd {
+  background: rgba(245, 63, 63, 0.2) !important;
+  border-color: var(--danger);
+}
+.scale{
+  position:relative;
+  min-height:420px;
+  max-height: calc(100vh - 80px);
+  background:var(--bg);
+  border-radius:16px;
+  border:1px solid var(--border);
+  padding:25px;
+  display:flex;
+  flex-direction:column;
+  width:92%;
+  align-self:center;
+}
+.scale-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:15px;
+  z-index:20;
+  position:relative;
+}
+.scale-controls-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.scale-controls-right{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.scale-controls-right .status-indicator{
+  margin-left:0;
+}
+.pan{
+  position:absolute;
+  width:160px;
+  height:160px;
+  border-radius:12px;
+  background:transparent;
+  border:0;
+  z-index:10;
+  pointer-events:auto;
+  transition:top 0.8s ease-in-out;
+  overflow:hidden;
+}
+.scale svg{
+  position:relative;
+  z-index:1;
+  width:100%;
+  height:calc(100% - 50px);
+  flex:1;
+  margin-top:20px;
+}
+.layout{
+  display:grid;
+  grid-template-columns:300px 1fr 260px;
+  gap:20px;
+  align-items:start;
+  width:100%;
+}
+@media (max-width: 992px) {
+  .layout{
+    grid-template-columns:1fr;
+  }
+  .history-sidebar {
+    margin-top:25px;
+    min-height:300px;
+  }
+}
+.sidebar{
+  display:flex;
+  flex-direction:column;
+  gap:25px;
+}
+.sidebar-controls{
+  display:flex;
+  flex-direction: column;
+  gap:12px;
+}
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sidebar-controls label{margin:0}
+.main{
+  display:flex;
+  flex-direction:column;
+  gap:25px;
+  width:100%;
+}
+.config{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.config .row{
+  display:flex;
+  gap:15px;
+  align-items:center;
+  justify-content:flex-start;
+}
+.config .actions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.pan .holder{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  padding:10px;
+  width:100%;
+  height:100%;
+  align-items:flex-end;
+  align-content:flex-end;
+  justify-content:center;
+}
+.pan.hover{
+  box-shadow:0 0 0 2px rgba(22, 93, 255, 0.35);
+  border-radius:12px;
+}
+.readout {
+  display: none;
+}
+.status-indicator {
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px 15px;
+  font-size:16px;
+  color:var(--text);
+  margin-left:auto;
+}
+.msg{
+  padding:15px 20px;
+  border-radius:10px;
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  font-size:16px;
+  transition:all 0.2s ease;
+}
+.msg.good{
+  border-color:var(--success);
+  color:var(--success);
+  background:rgba(0, 180, 42, 0.05);
+}
+.msg.bad{
+  border-color:var(--danger);
+  color:var(--danger);
+  background:rgba(245, 63, 63, 0.05);
+}
+.pool.hover{
+  box-shadow:0 0 0 2px rgba(22, 93, 255, 0.35);
+  border-radius:14px;
+}
+
+.pool .item{
+  width:40px;
+  height:40px;
+  font-size:16px;
+}
+
+/* 称重历史样式（右侧窄栏） */
+.history-sidebar {
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px 15px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  min-height:480px;
+  max-height: calc(100vh - 80px);
+  width:100%;
+}
+.history-title {
+  font-weight:600;
+  color:var(--text);
+  margin-bottom:16px;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--primary); /* 历史标题蓝色 */
+}
+.history-title svg {
+  width:24px;
+  height:24px;
+  color:var(--primary);
+}
+.history-list {
+  flex:1;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding-right:5px;
+  margin-bottom:16px;
+  min-height:0;
+}
+.history-item {
+  padding:12px 10px;
+  border-radius:10px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.history-item-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:5px;
+}
+.history-item-num {
+  font-weight:600;
+  color:var(--primary);
+  font-size:16px;
+}
+.history-item-result {
+  font-size:14px;
+  padding:4px 8px;
+  border-radius:6px;
+  white-space:nowrap;
+}
+.result-balance {
+  background:rgba(0, 180, 42, 0.1);
+  color:var(--success);
+}
+.result-left {
+  background:rgba(22, 93, 255, 0.1);
+  color:var(--left-pan);
+}
+.result-right {
+  background:rgba(64, 128, 255, 0.1);
+  color:var(--right-pan);
+}
+.history-item-content {
+  display:flex;
+  gap:10px;
+  font-size:14px;
+  color:var(--text-light);
+}
+.history-pan {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  flex:1;
+}
+.history-pan-label {
+  display:flex;
+  align-items:center;
+  gap:4px;
+  white-space:nowrap;
+}
+.history-pan-dot {
+  width:8px;
+  height:8px;
+  border-radius:50%;
+}
+.history-empty {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100%;
+  color:var(--text-light);
+  font-size:16px;
+  flex-direction:column;
+  gap:10px;
+  padding:20px 10px;
+  text-align:center;
+}
+.history-empty svg {
+  width:40px;
+  height:40px;
+  color:var(--border);
+}
+.clear-history {
+  margin-top:auto;
+  align-self:flex-end;
+  padding:8px 12px;
+  font-size:14px; 
+  background:var(--card-bg);
+  border:1px solid var(--primary); /* 清空按钮边框蓝色 */
+  color:var(--primary); /* 清空按钮文字蓝色 */
+  border-radius:8px;
+  cursor:pointer;
+  transition:all 0.2s ease;
+  white-space:nowrap;
+}
+.clear-history:hover {
+  background:rgba(22, 93, 255, 0.05); /* 清空按钮hover背景 */
+  color:var(--primary-dark);
+}
+
+/* 滚动条样式优化 */
+.items::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.items::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-radius: 3px;
+}
+.items::-webkit-scrollbar-thumb {
+  background: var(--primary-light);
+  border-radius: 3px;
+}
+.items::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1001;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 10px;
+}
+
+.close-btn {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.setting-option {
+  margin-bottom: 15px;
+}
+.help-btn{
+  position:fixed;
+  top:20px;
+  right:20px;
+  width:80px;
+  height:32px;
+  border-radius:6px;
+  background:var(--primary);
+  border:none;
+  color:#fff;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(22,93,255,.3);
+  z-index:1001;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all 0.2s ease;
+}
+.help-btn:hover{
+  transform:scale(1.05);
+  box-shadow:0 6px 16px rgba(22,93,255,.4);
+}
+.help-modal{
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,.5);
+  z-index:2000;
+  align-items:center;
+  justify-content:center;
+}
+.help-modal.show{
+  display:flex;
+}
+.help-modal-content{
+  background:#fff;
+  border-radius:16px;
+  padding:30px;
+  max-width:360px;
+  width:90%;
+  text-align:center;
+  box-shadow:0 20px 40px rgba(0,0,0,.2);
+}
+.help-modal-content h3{
+  margin:0 0 20px;
+  color:var(--text);
+  font-size:20px;
+}
+.help-modal-content p{
+  margin:0 0 15px;
+  color:var(--text-light);
+  font-size:15px;
+  line-height:1.6;
+}
+.help-modal-content .wechat-id{
+  background:var(--bg);
+  border-radius:8px;
+  padding:12px;
+  font-size:18px;
+  font-weight:600;
+  color:var(--primary);
+  margin:10px 0;
+}
+.help-modal-content .copy-btn{
+  width:100%;
+  margin-top:15px;
+}
+.help-modal-content .help-close-btn{
+  width:100%;
+  margin-top:10px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  color:var(--text);
+}
+</style>
+</head>
+<body>
+<button class="help-btn" onclick="showHelpModal()">帮助</button>
+<div class="help-modal" id="helpModal">
+  <div class="help-modal-content">
+    <h3>联系作者</h3>
+    <p>更多课件小红书/抖音搜索<br><strong>AI小灵光</strong></p>
+    <p style="margin-top:15px">支持定制课件</p>
+    <div class="wechat-id">微信：aixiaolingguang</div>
+    <button class="primary copy-btn" onclick="copyWechat()">复制微信</button>
+    <button class="help-close-btn" onclick="closeHelpModal()">关闭</button>
+  </div>
+</div>
+<div class="app">
+  <div class="header">
+    <div class="brand">五年级下册《找次品》</div>
+  </div>
+  <div class="layout">
+    <!-- 左侧栏 -->
+    <div class="sidebar">
+      <div class="sidebar-controls">
+        <div class="control-group">
+          <label>数量</label>
+          <input id="countInput" type="number" min="3" max="60" value="9" style="width:120px">
+          <button id="generateBtn" class="primary">生成物品</button>
+        </div>
+        <div class="control-group">
+          <button id="toggleOddBtn">显示次品</button>
+          <button id="settingsBtn">设置</button>
+        </div>
+      </div>
+      <div class="pool card">
+        <label>物品池（拖拽到右侧）</label>
+        <div id="itemsPool" class="items"></div>
+      </div>
+    </div>
+
+    <!-- 中间天平区域（扩大后） -->
+    <div class="main">
+      <div class="scale card">
+        <div class="scale-top">
+          <div class="scale-controls-left">
+            <button id="weighBtn" class="primary">称量</button>
+            <button id="clearPansBtn" class="warn">清空两盘</button>
+          </div>
+          <div class="scale-controls-right">
+            <div id="status" class="status-indicator">等待称量</div>
+          </div>
+        </div>
+        <svg id="scaleSvg" viewBox="0 0 800 380" width="100%" height="100%">
+          <!-- 天平底座 -->
+          <rect x="350" y="310" width="100" height="20" rx="6" fill="#475569"/>
+          <!-- 天平支柱 -->
+          <rect x="390" y="180" width="20" height="130" rx="10" fill="#334155"/>
+          <circle cx="400" cy="180" r="10" fill="#334155"/>
+          <!-- 天平横梁（加宽，仅梁参与旋转） -->
+          <g id="beam" style="transform-origin:400px 180px;transform:rotate(0deg)">
+            <rect x="120" y="175" width="560" height="10" rx="5" fill="#334155"/>
+          </g>
+          <!-- 悬挂链条与托盘（不随横梁旋转） -->
+          <line x1="220" y1="185" x2="220" y2="150" stroke="#64748b" stroke-width="3"/>
+          <line x1="580" y1="185" x2="580" y2="150" stroke="#64748b" stroke-width="3"/>
+          <!-- 托盘圆盘（位于横梁上方） -->
+          <ellipse cx="220" cy="120" rx="80" ry="18" fill="#e2e8f0" stroke="#94a3b8"/>
+          <ellipse cx="580" cy="120" rx="80" ry="18" fill="#e2e8f0" stroke="#94a3b8"/>
+        </svg>
+        <div class="pan left">
+          <div id="leftPan" class="holder"></div>
+        </div>
+        <div class="pan right">
+          <div id="rightPan" class="holder"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧窄版称重历史栏 -->
+    <div class="history-sidebar">
+      <div class="history-title">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        称量历史
+      </div>
+      <div id="historyList" class="history-list">
+        <div class="history-empty">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          暂无称量记录
+        </div>
+      </div>
+      <button id="clearHistoryBtn" class="clear-history">重新开始</button>
+    </div>
+  </div>
+</div>
+
+<div id="settingsModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h2>设置</h2>
+    <div class="setting-option">
+      <label for="oddball-mode">次品位置:</label>
+      <select id="oddball-mode">
+        <option value="random">随机</option>
+        <option value="last">最后一个</option>
+        <option value="specific">指定序号</option>
+      </select>
+    </div>
+    <div class="setting-option" id="specific-index-option" style="display: none;">
+      <label for="specific-index">指定序号:</label>
+      <input type="number" id="specific-index" min="1">
+    </div>
+    <button id="saveSettingsBtn" class="primary">保存</button>
+  </div>
+</div>
+
+
+<script>
+function showHelpModal(){
+  document.getElementById('helpModal').classList.add('show');
+}
+function closeHelpModal(){
+  document.getElementById('helpModal').classList.remove('show');
+}
+function copyWechat(){
+  navigator.clipboard.writeText('aixiaolingguang').then(()=>{
+    alert('已复制微信号：aixiaolingguang');
+  }).catch(()=>{
+    prompt('请手动复制微信号：','aixiaolingguang');
+  });
+}
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('helpModal').addEventListener('click',function(e){
+    if(e.target===this) closeHelpModal();
+  });
+});
+const state={
+  count:9,
+  base:10,
+  delta:1,
+  items:[],
+  weights:{},
+  oddId:null,
+  oddType:"light",
+  locations:{},
+  selected:new Set(),
+  left:new Set(),
+  right:new Set(),
+  weighs:0,
+  history:[],
+  panBaseTopLeft:0,
+  panBaseTopRight:0,
+    showOdd: false,
+  oddballMode: 'last',
+  specificOddball: 1
+}
+const el=id=>document.getElementById(id)
+
+// 触屏拖拽全局变量
+let touchDraggedItem = null;
+let touchGhost = null;
+let touchOffsetX = 0;
+let touchOffsetY = 0;
+let touchRects = {}; // 缓存目标区域坐标以优化性能
+
+// 初始化游戏
+function initGame(){
+  state.items=[];
+  state.weights={};
+  state.locations={};
+  state.selected=new Set();
+  state.left=new Set();
+  state.right=new Set();
+  state.weighs=0;
+  state.history=[];
+  state.oddType="light";
+    const n=state.count;
+  let oddIndex;
+  if (state.oddballMode === 'random') {
+    oddIndex = Math.floor(Math.random() * n);
+  } else if (state.oddballMode === 'last') {
+    oddIndex = n - 1;
+  } else if (state.oddballMode === 'specific') {
+    oddIndex = state.specificOddball - 1;
+  }
+  state.oddId=oddIndex;
+  for(let i=0;i<n;i++){
+    state.items.push(i);
+    const w=i===oddIndex
+      ? (state.oddType==="light"?state.base-state.delta:state.base+state.delta)
+      : state.base;
+    state.weights[i]=w;
+    state.locations[i]="pool";
+  }
+  renderAll();
+}
+
+// 渲染所有内容
+function renderAll(resetScale = true){
+  renderPool();
+  renderPans();
+  renderHistory();
+  
+  if (resetScale) {
+    el("status").textContent="等待称量";
+    el("beam").style.transform="rotate(0deg)";
+    const svg=el('scaleSvg');
+    const ellipses=svg.querySelectorAll('ellipse');
+    const lines=svg.querySelectorAll('line');
+    [ellipses[0],ellipses[1],lines[0],lines[1]].forEach(e=>{ if(e){ e.style.transform='translateY(0px)'; e.style.transition='transform 0.8s ease-in-out'; } });
+    const lp=el('leftPan').parentElement;
+    const rp=el('rightPan').parentElement;
+    if(state.panBaseTopLeft&&state.panBaseTopRight){
+      lp.style.top=state.panBaseTopLeft+'px';
+      rp.style.top=state.panBaseTopRight+'px';
+    }
+  }
+}
+
+// 创建物品元素
+function itemEl(id){
+  const div=document.createElement("div");
+  div.className="item";
+  
+  const img = document.createElement("img");
+  const isOdd = id === state.oddId;
+  img.src = (isOdd && state.showOdd) ? "images/defective.png" : "images/normal.png";
+  img.alt = isOdd ? "次品" : "正品";
+  // 如果图片加载失败，显示占位
+  img.onerror = () => {
+    img.style.display = 'none';
+    div.style.background = (isOdd && state.showOdd) ? 'var(--danger)' : 'var(--item-color)';
+  };
+  div.appendChild(img);
+
+  const label = document.createElement("span");
+  label.className = "item-label";
+  label.textContent=(id+1);
+  div.appendChild(label);
+
+  if(state.showOdd && isOdd) div.classList.add('odd');
+  if(state.selected.has(id))div.classList.add("selected");
+  div.onclick=()=>{
+    if(state.selected.has(id)){
+      state.selected.delete(id)
+    }else{
+      state.selected.add(id)
+    }
+    div.classList.toggle("selected");
+  };
+  div.setAttribute("draggable","true");
+  div.ondragstart=e=>{
+    e.dataTransfer.setData("text/plain",String(id));
+    e.dataTransfer.effectAllowed="move"
+  };
+
+  // 触屏拖拽开始
+  div.ontouchstart = (e) => {
+    const touch = e.touches[0];
+    touchDraggedItem = id;
+    
+    // 缓存容器区域，避免在 touchmove 中频繁调用 getBoundingClientRect
+    const lBox = el("leftPan").parentElement;
+    const rBox = el("rightPan").parentElement;
+    const pool = el("itemsPool");
+    touchRects = {
+      left: lBox.getBoundingClientRect(),
+      right: rBox.getBoundingClientRect(),
+      pool: pool.getBoundingClientRect()
+    };
+    
+    // 创建拖拽镜像
+    touchGhost = div.cloneNode(true);
+    touchGhost.style.position = 'fixed';
+    touchGhost.style.zIndex = '2000';
+    touchGhost.style.pointerEvents = 'none';
+    touchGhost.style.opacity = '0.8';
+    touchGhost.style.willChange = 'transform'; // 提示浏览器优化
+    touchGhost.style.boxShadow = '0 12px 24px rgba(0,0,0,0.3)';
+    
+    const rect = div.getBoundingClientRect();
+    touchOffsetX = touch.clientX - rect.left;
+    touchOffsetY = touch.clientY - rect.top;
+    
+    // 使用 transform 代替 left/top 性能更好
+    touchGhost.style.left = '0';
+    touchGhost.style.top = '0';
+    touchGhost.style.width = rect.width + 'px';
+    touchGhost.style.height = rect.height + 'px';
+    touchGhost.style.transform = `translate3d(${rect.left}px, ${rect.top}px, 0) scale(1.1)`;
+    
+    document.body.appendChild(touchGhost);
+    // 阻止默认行为（如滚动）
+    if (e.cancelable) e.preventDefault();
+  };
+
+  return div;
+}
+
+// 渲染物品池
+function renderPool(){
+  const pool=el("itemsPool");
+  pool.innerHTML="";
+  const ids=state.items.filter(i=>state.locations[i]==="pool");
+  ids.forEach(i=>{
+    pool.appendChild(itemEl(i))
+  })
+  // 重置滚动条位置到顶部
+  pool.scrollTop = 0;
+}
+
+// 渲染天平托盘
+function renderPans(){
+  const l=el("leftPan"),r=el("rightPan");
+  l.innerHTML="";
+  r.innerHTML="";
+  const computeSize=(holder, cols)=>{
+    const style=getComputedStyle(holder);
+    const pad=(parseFloat(style.paddingLeft)||0)+(parseFloat(style.paddingRight)||0);
+    const gap=6;
+    const inner=holder.clientWidth - pad - gap*(cols-1);
+    return Math.floor(inner/cols);
+  };
+  const cols=3;
+  const lSize=computeSize(l,cols);
+  const rSize=computeSize(r,cols);
+  const size=Math.min(lSize,rSize);
+  Array.from(state.left).forEach(i=>{
+    const c=itemEl(i);
+    c.style.outlineColor="var(--left-pan)";
+    c.style.width=size+"px";
+    c.style.height=size+"px";
+    const label = c.querySelector('.item-label');
+    if(label) label.style.fontSize=Math.round(size*0.36)+"px";
+    l.appendChild(c)
+  });
+  Array.from(state.right).forEach(i=>{
+    const c=itemEl(i);
+    c.style.outlineColor="var(--right-pan)";
+    c.style.width=size+"px";
+    c.style.height=size+"px";
+    const label = c.querySelector('.item-label');
+    if(label) label.style.fontSize=Math.round(size*0.36)+"px";
+    r.appendChild(c)
+  })
+}
+
+// 移动选中的物品
+function moveSelected(target){
+  const ids=Array.from(state.selected);
+  ids.forEach(i=>{
+    if(target==="left"){
+      state.left.add(i);
+      state.right.delete(i);
+      state.locations[i]="left"
+    }else if(target==="right"){
+      state.right.add(i);
+      state.left.delete(i);
+      state.locations[i]="right"
+    }else{
+      state.left.delete(i);
+      state.right.delete(i);
+      state.locations[i]="pool"
+    }
+  });
+  renderPool();
+  renderPans();
+}
+
+// 移动单个物品
+function moveItem(id,target){
+  if(!state.items.includes(id))return;
+  if(target==="left"){
+    state.left.add(id);
+    state.right.delete(id);
+    state.locations[id]="left"
+  }else if(target==="right"){
+    state.right.add(id);
+    state.left.delete(id);
+    state.locations[id]="right"
+  }else{
+    state.left.delete(id);
+    state.right.delete(id);
+    state.locations[id]="pool"
+  }
+  state.selected.delete(id);
+  renderPool();
+  renderPans();
+}
+
+// 清空选择
+function clearSelection(){
+  state.selected.clear();
+  renderPool();
+  renderPans();
+}
+
+// 清空托盘
+function clearPans(){
+  state.left.clear();
+  state.right.clear();
+  Object.keys(state.locations).forEach(k=>state.locations[k]="pool");
+  renderAll();
+}
+
+// 计算重量总和
+function sum(set){
+  let s=0;
+  Array.from(set).forEach(i=>s+=state.weights[i]);
+  return s;
+}
+
+// 称量操作
+function weigh(){
+  const ls=sum(state.left),rs=sum(state.right);
+  const leftItems = Array.from(state.left).map(id => id + 1).join(', ');
+  const rightItems = Array.from(state.right).map(id => id + 1).join(', ');
+  state.weighs++;
+  
+  // 记录称重历史
+  let resultText, resultType;
+  if(ls === rs) {
+    resultText = "平衡";
+    resultType = "balance";
+  } else if(ls > rs) {
+    resultText = "右轻";
+    resultType = "right";
+  } else {
+    resultText = "左轻";
+    resultType = "left";
+  }
+  
+  // 添加到历史记录
+  state.history.push({
+    id: state.weighs,
+    left: leftItems || "无",
+    right: rightItems || "无",
+    result: resultText,
+    resultType: resultType,
+    timestamp: new Date().toLocaleTimeString()
+  });
+  
+  // 更新界面
+  el("status").textContent=resultText;
+  const angle=Math.max(-18,Math.min(18,(rs-ls)/state.base*6));
+  el("beam").style.transform="rotate("+angle+"deg)";
+  el("beam").style.transition="transform 0.8s ease-in-out";
+  const lp=el('leftPan').parentElement;
+  const rp=el('rightPan').parentElement;
+  const leftBase=state.panBaseTopLeft||parseFloat(lp.style.top)||0;
+  const rightBase=state.panBaseTopRight||parseFloat(rp.style.top)||0;
+  const DROP=24;
+  const svg=el('scaleSvg');
+  const ellipses=svg.querySelectorAll('ellipse');
+  const lines=svg.querySelectorAll('line');
+  [ellipses[0],ellipses[1],lines[0],lines[1]].forEach(e=>{ if(e){ e.style.transition='transform 0.8s ease-in-out'; } });
+  if(ls===rs){
+    lp.style.top=leftBase+"px";
+    rp.style.top=rightBase+"px";
+    if(ellipses[0]) ellipses[0].style.transform='translateY(0px)';
+    if(ellipses[1]) ellipses[1].style.transform='translateY(0px)';
+    if(lines[0]) lines[0].style.transform='translateY(0px)';
+    if(lines[1]) lines[1].style.transform='translateY(0px)';
+  }else if(ls>rs){
+    lp.style.top=(leftBase + DROP)+"px";
+    rp.style.top=(rightBase - DROP)+"px";
+    if(ellipses[0]) ellipses[0].style.transform='translateY('+DROP+'px)';
+    if(ellipses[1]) ellipses[1].style.transform='translateY('+-DROP+'px)';
+    if(lines[0]) lines[0].style.transform='translateY('+DROP+'px)';
+    if(lines[1]) lines[1].style.transform='translateY('+-DROP+'px)';
+  }else{
+    lp.style.top=(leftBase - DROP)+"px";
+    rp.style.top=(rightBase + DROP)+"px";
+    if(ellipses[0]) ellipses[0].style.transform='translateY('+-DROP+'px)';
+    if(ellipses[1]) ellipses[1].style.transform='translateY('+DROP+'px)';
+    if(lines[0]) lines[0].style.transform='translateY('+-DROP+'px)';
+    if(lines[1]) lines[1].style.transform='translateY('+DROP+'px)';
+  }
+  
+  // 渲染历史记录
+  renderHistory();
+}
+
+// 渲染称重历史（适配窄栏）
+function renderHistory() {
+  const historyList = el("historyList");
+  if (state.history.length === 0) {
+    historyList.innerHTML = `
+      <div class="history-empty">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        暂无称量记录
+      </div>
+    `;
+    return;
+  }
+  
+  historyList.innerHTML = "";
+  // 倒序显示（最新的在最上面）
+  [...state.history].reverse().forEach(item => {
+    const itemEl = document.createElement("div");
+    itemEl.className = "history-item";
+    itemEl.innerHTML = `
+      <div class="history-item-header">
+        <div class="history-item-num">第 ${item.id} 次</div>
+        <div class="history-item-result result-${item.resultType}">${item.result}</div>
+      </div>
+      <div class="history-item-content">
+        <div class="history-pan">
+          <div class="history-pan-label">
+            <div class="history-pan-dot" style="background:var(--left-pan)"></div>
+            左：
+          </div>
+          <div style="font-size:13px;word-break:break-all">${item.left}</div>
+        </div>
+        <div class="history-pan">
+          <div class="history-pan-label">
+            <div class="history-pan-dot" style="background:var(--right-pan)"></div>
+            右：
+          </div>
+          <div style="font-size:13px;word-break:break-all">${item.right}</div>
+        </div>
+      </div>
+    `;
+    historyList.appendChild(itemEl);
+  });
+}
+
+// 清空历史记录
+function clearHistory() {
+  state.history = [];
+  renderHistory();
+}
+
+// 事件绑定
+el("generateBtn").onclick=()=>{
+  const v=parseInt(el("countInput").value,10);
+  state.count=isNaN(v)?12:Math.max(3,Math.min(60,v));
+  state.oddType="light";
+  initGame();
+}
+el("clearPansBtn").onclick=()=>clearPans();
+el("weighBtn").onclick=()=>weigh();
+el("clearHistoryBtn").onclick=()=>initGame();
+el("toggleOddBtn").onclick=()=>{
+  state.showOdd = !state.showOdd;
+  el("toggleOddBtn").textContent = state.showOdd ? "隐藏次品" : "显示次品";
+  renderAll(false);
+};
+
+el("settingsBtn").onclick = () => {
+  el("settingsModal").style.display = "block";
+  el("oddball-mode").value = state.oddballMode;
+  el("specific-index").value = state.specificOddball;
+  el("specific-index-option").style.display = state.oddballMode === "specific" ? "block" : "none";
+};
+
+document.querySelector(".close-btn").onclick = () => {
+  el("settingsModal").style.display = "none";
+};
+
+window.onclick = (event) => {
+  if (event.target == el("settingsModal")) {
+    el("settingsModal").style.display = "none";
+  }
+};
+
+el("oddball-mode").onchange = () => {
+  el("specific-index-option").style.display = el("oddball-mode").value === "specific" ? "block" : "none";
+};
+
+el("saveSettingsBtn").onclick = () => {
+  state.oddballMode = el("oddball-mode").value;
+  const specificIndex = parseInt(el("specific-index").value, 10);
+  if (state.oddballMode === "specific") {
+    if (isNaN(specificIndex) || specificIndex < 1 || specificIndex > state.count) {
+      alert(`请输入1到${state.count}之间的有效序号。`);
+      return;
+    }
+    state.specificOddball = specificIndex;
+  }
+  el("settingsModal").style.display = "none";
+  initGame();
+};
+
+// 定位托盘位置（适配加宽的天平）
+function positionPans(){
+  const scale=document.querySelector('.scale');
+  const srect=scale.getBoundingClientRect();
+  const svg=el('scaleSvg');
+  const svrect=svg.getBoundingClientRect();
+  const Wsvg=svrect.width,Hsvg=svrect.height;
+  const panW=160;
+  const panH=160;
+  const leftCenterX=(220/800)*Wsvg + (svrect.left - srect.left);
+  const rightCenterX=(580/800)*Wsvg + (svrect.left - srect.left);
+  const ellipses=svg.querySelectorAll('ellipse');
+  const leftEllipseTop=(ellipses.length?ellipses[0].getBoundingClientRect().top:svrect.top);
+  const ellipseTopY=leftEllipseTop - srect.top;
+  const lp=el('leftPan').parentElement;
+  const rp=el('rightPan').parentElement;
+  lp.style.left=(leftCenterX-panW/2)+'px';
+  const baseTop=(ellipseTopY + 20 - panH);
+  lp.style.top=baseTop+'px';
+  rp.style.left=(rightCenterX-panW/2)+'px';
+  rp.style.top=baseTop+'px';
+  state.panBaseTopLeft=baseTop;
+  state.panBaseTopRight=baseTop;
+}
+
+// 响应式调整
+window.addEventListener('resize',positionPans);
+function adjustScaleHeight(){
+  const controls=document.querySelector('.sidebar-controls');
+  const pool=document.querySelector('.pool.card');
+  const scale=document.querySelector('.scale');
+  const sidebar=document.querySelector('.sidebar');
+  const history=document.querySelector('.history-sidebar');
+  if(!controls||!pool||!scale||!sidebar||!history) return;
+  const gap=parseFloat(getComputedStyle(sidebar).gap)||0;
+  const total=controls.getBoundingClientRect().height+gap+pool.getBoundingClientRect().height;
+  scale.style.height=total+'px';
+  history.style.height=total+'px';
+  positionPans();
+}
+window.addEventListener('resize',adjustScaleHeight);
+positionPans();
+adjustScaleHeight();
+
+// 设置拖拽功能
+function setupDnD(){
+  const lBox=el("leftPan").parentElement;
+  const rBox=el("rightPan").parentElement;
+  const pool=el("itemsPool");
+  
+  [lBox,rBox,pool].forEach(z=>{
+    z.ondragover=e=>{
+      e.preventDefault();
+      try{e.dataTransfer.dropEffect="move"}catch{}
+    }
+  });
+  
+  const parseId=e=>parseInt(e.dataTransfer.getData("text/plain"),10);
+  const drop=(e,target)=>{
+    const id=parseId(e);
+    if(Number.isInteger(id))moveItem(id,target);
+  };
+  
+  lBox.ondrop=e=>drop(e,"left");
+  rBox.ondrop=e=>drop(e,"right");
+  pool.ondrop=e=>drop(e,"pool");
+  
+  [lBox,rBox].forEach(box=>{
+    box.addEventListener("dragenter",()=>box.classList.add("hover"));
+    box.addEventListener("dragleave",()=>box.classList.remove("hover"));
+    box.addEventListener("drop",()=>box.classList.remove("hover"));
+  });
+  
+  pool.parentElement.addEventListener("dragenter",()=>pool.parentElement.classList.add("hover"));
+  pool.parentElement.addEventListener("dragleave",()=>pool.parentElement.classList.remove("hover"));
+  pool.parentElement.addEventListener("drop",()=>pool.parentElement.classList.remove("hover"));
+}
+
+// 设置触屏拖拽
+function setupTouchDnD() {
+  let ticking = false; // 用于 requestAnimationFrame 节流
+
+  window.addEventListener('touchmove', (e) => {
+    if (!touchGhost) return;
+    const touch = e.touches[0];
+    const clientX = touch.clientX;
+    const clientY = touch.clientY;
+
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        if (touchGhost) {
+          const x = clientX - touchOffsetX;
+          const y = clientY - touchOffsetY;
+          touchGhost.style.transform = `translate3d(${x}px, ${y}px, 0) scale(1.1)`;
+          updateTouchHover(clientX, clientY);
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
+    
+    if (e.cancelable) e.preventDefault();
+  }, { passive: false });
+
+  window.addEventListener('touchend', (e) => {
+    if (touchDraggedItem === null) return;
+    const touch = e.changedTouches[0];
+    const target = getTouchTarget(touch.clientX, touch.clientY);
+    
+    if (target) {
+      moveItem(touchDraggedItem, target);
+    }
+    
+    if (touchGhost) {
+      touchGhost.remove();
+      touchGhost = null;
+    }
+    touchDraggedItem = null;
+    touchRects = {}; // 清空缓存
+    clearTouchHover();
+  });
+
+  function getTouchTarget(x, y) {
+    // 使用缓存的坐标，大幅提升性能
+    if (touchRects.left && x >= touchRects.left.left && x <= touchRects.left.right && y >= touchRects.left.top && y <= touchRects.left.bottom) return "left";
+    if (touchRects.right && x >= touchRects.right.left && x <= touchRects.right.right && y >= touchRects.right.top && y <= touchRects.right.bottom) return "right";
+    if (touchRects.pool && x >= touchRects.pool.left && x <= touchRects.pool.right && y >= touchRects.pool.top && y <= touchRects.pool.bottom) return "pool";
+    return null;
+  }
+
+  function updateTouchHover(x, y) {
+    const target = getTouchTarget(x, y);
+    const lBox = el("leftPan").parentElement;
+    const rBox = el("rightPan").parentElement;
+    const poolParent = el("itemsPool").parentElement;
+    
+    lBox.classList.remove("hover");
+    rBox.classList.remove("hover");
+    poolParent.classList.remove("hover");
+    
+    if (target === "left") lBox.classList.add("hover");
+    else if (target === "right") rBox.classList.add("hover");
+    else if (target === "pool") poolParent.classList.add("hover");
+  }
+
+  function clearTouchHover() {
+    el("leftPan").parentElement.classList.remove("hover");
+    el("rightPan").parentElement.classList.remove("hover");
+    el("itemsPool").parentElement.classList.remove("hover");
+  }
+}
+
+// 初始化
+setupDnD();
+setupTouchDnD();
+initGame();
+
+</script>
+</body>
+</html>
