@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>🚚 包裹宝宝找家家 · 幼儿园配对乐</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(145deg, #fef9e4 0%, #fff5d7 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Comic Sans MS', 'Chalkboard SE', '幼圆', 'Yuanti SC', sans-serif;
+      padding: 16px;
+      margin: 0;
+    }
+
+    .game-container {
+      max-width: 1200px;
+      width: 100%;
+      background: rgba(255, 251, 240, 0.75);
+      backdrop-filter: blur(8px);
+      border-radius: 72px 72px 48px 48px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 8px 20px rgba(0, 0, 0, 0.08), inset 0 2px 8px #fff9e6;
+      padding: 28px 20px 36px;
+      border: 4px solid #ffe9b5;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.8rem;
+      font-weight: bold;
+      color: #b45f2b;
+      text-shadow: 6px 6px 0 #ffd78c;
+      letter-spacing: 2px;
+      word-break: break-word;
+      margin-top: -10px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    h1 span {
+      background: #ffb882;
+      padding: 8px 20px;
+      border-radius: 60px;
+      font-size: 1.5rem;
+      color: #442b18;
+      box-shadow: inset 0 -3px 0 #c27e4a, 0 6px 0 #a05a2c;
+      border: 2px solid #ffe6bf;
+    }
+
+    /* 三个快递站 —— 卡通大房子 */
+    .stations-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px 18px;
+      margin: 10px 0 20px;
+    }
+
+    .station {
+      flex: 1 1 200px;
+      min-width: 190px;
+      background: #ffe3b0;
+      border-radius: 50px 50px 30px 30px;
+      padding: 22px 8px 18px;
+      box-shadow: 0 12px 0 #bb7e4b, 0 10px 15px rgba(0,0,0,0.1), inset 0 -6px 0 #eec18e;
+      border: 3px solid #fbeabd;
+      text-align: center;
+      transition: all 0.2s ease;
+      position: relative;
+      cursor: pointer;
+    }
+    .station.celebrate {
+      box-shadow: 0 12px 0 #bb7e4b, 0 0 25px #ffd966, 0 0 35px #ffb3b3, 0 0 45px #aad6ff;
+      border-color: #ffeaa6;
+      animation: softGlow 1.2s infinite alternate;
+    }
+    @keyframes softGlow {
+      from { box-shadow: 0 12px 0 #bb7e4b, 0 0 20px gold, 0 0 30px #ffb7c5, 0 0 40px #aad6ff; }
+      to { box-shadow: 0 12px 0 #bb7e4b, 0 0 30px #ffbf00, 0 0 45px #ff8da1, 0 0 55px #87cefa; }
+    }
+
+    .station-emoji {
+      font-size: 4.2rem;
+      line-height: 1.2;
+      filter: drop-shadow(4px 8px 4px rgba(0,0,0,0.15));
+    }
+    .station h2 {
+      font-size: 2rem;
+      background: #fef7e9;
+      display: inline-block;
+      padding: 6px 24px;
+      border-radius: 40px;
+      margin: 8px 0 10px;
+      color: #563e1f;
+      border: 3px solid #ffc27a;
+      box-shadow: inset 0 2px 5px #ffe3ae, 0 5px 0 #b2722a;
+      font-weight: 700;
+    }
+
+    .paired-box {
+      min-height: 95px;
+      background: #fbeec9;
+      border-radius: 30px;
+      margin: 8px 8px 0;
+      padding: 10px 8px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px 6px;
+      border: 3px dashed #e7b069;
+      box-shadow: inset 0 4px 8px #dba959;
+      transition: 0.2s;
+    }
+
+    .paired-package {
+      background: #fdf4d9;
+      border-radius: 30px;
+      padding: 6px 12px;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 0 #c49a6c, 0 2px 6px rgba(0,0,0,0.1);
+      border: 2px solid #fdd7a8;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: bold;
+      color: #482e1a;
+    }
+
+    /* 包裹区大标题和按钮区 */
+    .packages-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 25px;
+      margin: 20px 0 12px;
+      flex-wrap: wrap;
+    }
+    .packages-title {
+      font-size: 2.2rem;
+      color: #6b4226;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-show-packages {
+      background: #fbbb2d;
+      border: none;
+      font-size: 2.2rem;
+      font-weight: bold;
+      padding: 14px 28px;
+      border-radius: 60px;
+      box-shadow: 0 10px 0 #b47d21, 0 6px 15px #ac8e6b;
+      color: #2d1b0c;
+      border: 4px solid #ffe494;
+      cursor: pointer;
+      font-family: inherit;
+      transition: 0.05s linear;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-show-packages:active {
+      transform: translateY(7px);
+      box-shadow: 0 3px 0 #b47d21, 0 6px 15px #ac8e6b;
+    }
+
+    .packages-grid {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 16px 20px;
+      background: #ffddb2;
+      padding: 28px 16px;
+      border-radius: 80px 30px 80px 30px;
+      box-shadow: inset 0 6px 0 #eebb77, 0 12px 0 #aa7744, 0 6px 12px rgba(0,0,0,0.1);
+      border: 3px solid #ffd49f;
+      margin-bottom: 16px;
+      min-height: 200px;
+    }
+
+    .empty-packages-message {
+      font-size: 2rem;
+      color: #9b6e42;
+      text-align: center;
+      padding: 30px;
+      background: #fce6c4;
+      border-radius: 60px;
+      width: 100%;
+      border: 4px dashed #c49a6c;
+    }
+
+    .package-card {
+      background: #fff7e6;
+      padding: 14px 10px 10px;
+      border-radius: 40px 20px 40px 20px;
+      box-shadow: 0 8px 0 #bb8844, 0 6px 10px rgba(0,0,0,0.1);
+      border: 3px solid #fecb89;
+      font-size: 2rem;
+      min-width: 130px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.1s;
+      color: #3f280e;
+      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+    }
+    .package-card span {
+      font-size: 1.1rem;
+      background: #ffdbb5;
+      padding: 5px 12px;
+      border-radius: 30px;
+      margin-top: 6px;
+      color: #3a240b;
+      box-shadow: inset 0 1px 4px #ffbf7e;
+    }
+    .package-card.selected {
+      box-shadow: 0 8px 0 #bb8844, 0 0 0 6px #ffe484, 0 10px 15px #ac8b5e;
+      transform: scale(1.02) rotate(1deg);
+      background: #fff3d1;
+    }
+    .package-card:active {
+      transform: scale(0.98);
+      box-shadow: 0 4px 0 #9e6b32, 0 6px 10px rgba(0,0,0,0.1);
+    }
+
+    /* 特效浮动层 */
+    .effect-toast {
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 240, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 24px 42px;
+      border-radius: 120px;
+      font-size: 5.5rem;
+      box-shadow: 0 20px 30px rgba(0,0,0,0.2), 0 0 0 8px #ffeab5;
+      z-index: 999;
+      border: 5px solid white;
+      animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      text-align: center;
+      white-space: nowrap;
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: translate(-50%, -30%) scale(0.6); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .floating-zone {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    .float-heart, .float-star {
+      position: absolute;
+      font-size: 2.8rem;
+      animation: flyUp 3s ease-out forwards;
+      opacity: 0.9;
+      filter: drop-shadow(0 8px 12px rgba(255, 200, 0, 0.3));
+    }
+    @keyframes flyUp {
+      0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-350px) scale(1.6) rotate(20deg); opacity: 0; }
+    }
+
+    .btn-reset-small {
+      background: #fea82f;
+      border: none;
+      font-size: 1.6rem;
+      font-weight: bold;
+      padding: 8px 20px;
+      border-radius: 50px;
+      box-shadow: 0 6px 0 #9f5d26, 0 4px 10px #ac8e6b;
+      color: #2d1b0c;
+      border: 3px solid #ffd58c;
+      cursor: pointer;
+      font-family: inherit;
+      transition: 0.05s;
+      margin-left: 10px;
+    }
+    .btn-reset-small:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #9f5d26, 0 4px 10px #ac8e6b;
+    }
+
+    .info-tip {
+      text-align: center;
+      font-size: 1.4rem;
+      color: #825a36;
+      margin: 15px 0 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="game-container">
+  <h1>
+    📦 包裹宝宝找家家
+    <span>🚚✨</span>
+  </h1>
+
+  <!-- 三个快递站 -->
+  <div class="stations-row">
+    <div class="station" id="station-beijing" data-station="beijing">
+      <div class="station-emoji">🏯🐉</div>
+      <h2>📮北京站</h2>
+      <div class="paired-box" id="beijing-paired"></div>
+    </div>
+    <div class="station" id="station-sichuan" data-station="sichuan">
+      <div class="station-emoji">🎋🐼</div>
+      <h2>📮四川站</h2>
+      <div class="paired-box" id="sichuan-paired"></div>
+    </div>
+    <div class="station" id="station-guangxi" data-station="guangxi">
+      <div class="station-emoji">🌺🏞️</div>
+      <h2>📮广西站</h2>
+      <div class="paired-box" id="guangxi-paired"></div>
+    </div>
+  </div>
+
+  <!-- 包裹区标题 + 主按钮“出现包裹” -->
+  <div class="packages-header">
+    <div class="packages-title">
+      <span>📬</span> 待配送包裹 <span>📬</span>
+    </div>
+    <button class="btn-show-packages" id="showPackagesBtn">📦 快递车来啦！点我卸货 🚛</button>
+  </div>
+
+  <!-- 包裹展示区 -->
+  <div class="packages-grid" id="packagesContainer">
+    <!-- 初始为空，显示提示 -->
+    <div class="empty-packages-message" id="emptyMessage">✨ 点击上面的大按钮，包裹就会出现啦 ✨</div>
+  </div>
+
+  <!-- 辅助按钮：重置游戏（也可重新出现包裹） -->
+  <div style="display: flex; justify-content: center; margin-top: 5px;">
+    <button class="btn-reset-small" id="resetGameBtn">🔄 重新开始</button>
+  </div>
+  <div class="info-tip">⭐ 先点包裹，再点快递站～ 全部送完亮彩灯 ⭐</div>
+</div>
+
+<!-- 特效层 -->
+<div id="effectToast" class="effect-toast" style="display: none;"></div>
+<div id="floatingArea" class="floating-zone"></div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ----- 包裹数据 ------
+    const packagesData = [
+      { id: 'p1', name: '天安门', emoji: '🏯', correctStation: 'beijing', successEffect: '🌸小红花🌸' },
+      { id: 'p2', name: '万里长城', emoji: '🧱🏔️', correctStation: 'beijing', successEffect: '👏鼓掌👏' },
+      { id: 'p3', name: '大熊猫', emoji: '🐼🎋', correctStation: 'sichuan', successEffect: '🐼大熊猫🐼' },
+      { id: 'p4', name: '川剧变脸', emoji: '🎭✨', correctStation: 'sichuan', successEffect: '🎆烟花🎆' },
+      { id: 'p5', name: '壮族服饰', emoji: '👘🌺', correctStation: 'guangxi', successEffect: '🎵壮族歌曲🎵' },
+      { id: 'p6', name: '绣球', emoji: '🔴🏵️', correctStation: 'guangxi', successEffect: '🎉欢呼🎉' }
+    ];
+
+    // 状态管理
+    let packages = [];               
+    let selectedPackageId = null;
+    let gameCompleted = false;
+    let packagesVisible = false;      // 是否显示包裹（初始隐藏）
+
+    // DOM 元素
+    const packagesContainer = document.getElementById('packagesContainer');
+    const emptyMessage = document.getElementById('emptyMessage');
+    const beijingPairedDiv = document.getElementById('beijing-paired');
+    const sichuanPairedDiv = document.getElementById('sichuan-paired');
+    const guangxiPairedDiv = document.getElementById('guangxi-paired');
+    const stationElements = {
+      beijing: document.getElementById('station-beijing'),
+      sichuan: document.getElementById('station-sichuan'),
+      guangxi: document.getElementById('station-guangxi')
+    };
+    const effectToast = document.getElementById('effectToast');
+    const floatingArea = document.getElementById('floatingArea');
+    const showPackagesBtn = document.getElementById('showPackagesBtn');
+    const resetBtn = document.getElementById('resetGameBtn');
+
+    // ----- 特效辅助 -----
+    function showEffectMessage(emojiText, duration = 1800) {
+      effectToast.style.display = 'block';
+      effectToast.textContent = emojiText;
+      setTimeout(() => {
+        effectToast.style.display = 'none';
+      }, duration);
+    }
+
+    function showErrorEffect() {
+      showEffectMessage('❌ 哎呀不对哦 ❌', 1200);
+    }
+
+    function triggerSuccessEffect(pkg) {
+      let message = '';
+      if (pkg.id === 'p1') message = '🌸 小红花 🌸';
+      else if (pkg.id === 'p2') message = '👏 鼓掌！好棒 👏';
+      else if (pkg.id === 'p3') message = '🐼 大熊猫来啦 🐼';
+      else if (pkg.id === 'p4') message = '🎆 烟花嘭嘭 🎆';
+      else if (pkg.id === 'p5') message = '🎵 壮族歌谣～ 🎵';
+      else if (pkg.id === 'p6') message = '🎉 绣球欢呼 🎉';
+      else message = '✨ 成功啦 ✨';
+      showEffectMessage(message, 2000);
+    }
+
+    // ----- 渲染包裹区 & 站点已配对区 -----
+    function renderAll() {
+      // 清空容器
+      packagesContainer.innerHTML = '';
+      beijingPairedDiv.innerHTML = '';
+      sichuanPairedDiv.innerHTML = '';
+      guangxiPairedDiv.innerHTML = '';
+
+      if (!packagesVisible) {
+        // 隐藏包裹，显示提示语
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'empty-packages-message';
+        msgDiv.id = 'emptyMessage';
+        msgDiv.textContent = '✨ 点击上面的大按钮，包裹就会出现啦 ✨';
+        packagesContainer.appendChild(msgDiv);
+        // 仍然需要渲染已配对的（如果有历史配对，但重置时已清空）
+        // 但隐藏状态下，已配对区域应该也是空的，因为重置会清空。不过以防万一，也渲染一下。
+        // 实际上重置会将packagesVisible设为false, packages重置, 已配对为空。
+      } else {
+        // 显示包裹卡片
+        const unpaired = packages.filter(p => !p.paired);
+        if (unpaired.length === 0) {
+          // 全部配对完了，但包裹区可见时可以显示“全部送到啦”
+          const doneDiv = document.createElement('div');
+          doneDiv.className = 'empty-packages-message';
+          doneDiv.textContent = '🎉 所有包裹都送到啦！好棒 🎉';
+          packagesContainer.appendChild(doneDiv);
+        } else {
+          unpaired.forEach(pkg => {
+            const card = document.createElement('div');
+            card.className = 'package-card' + (selectedPackageId === pkg.id ? ' selected' : '');
+            card.setAttribute('data-id', pkg.id);
+            card.innerHTML = `
+              <div style="font-size:2.6rem; line-height:1.2;">${pkg.emoji}</div>
+              <span>${pkg.name}</span>
+            `;
+            card.addEventListener('click', (e) => {
+              e.stopPropagation();
+              if (gameCompleted) {
+                showEffectMessage('🎈 全部送到啦！按"重新开始"继续玩 🎈', 1200);
+                return;
+              }
+              const p = packages.find(p => p.id === pkg.id);
+              if (p && !p.paired) {
+                selectedPackageId = pkg.id;
+                renderAll();
+              } else {
+                selectedPackageId = null;
+                renderAll();
+              }
+            });
+            packagesContainer.appendChild(card);
+          });
+        }
+      }
+
+      // 渲染已配对包裹到各站点
+      const beijingPkgs = packages.filter(p => p.paired && p.pairedStation === 'beijing');
+      const sichuanPkgs = packages.filter(p => p.paired && p.pairedStation === 'sichuan');
+      const guangxiPkgs = packages.filter(p => p.paired && p.pairedStation === 'guangxi');
+
+      beijingPkgs.forEach(p => {
+        const chip = document.createElement('div');
+        chip.className = 'paired-package';
+        chip.innerHTML = `${p.emoji} ${p.name}`;
+        beijingPairedDiv.appendChild(chip);
+      });
+      sichuanPkgs.forEach(p => {
+        const chip = document.createElement('div');
+        chip.className = 'paired-package';
+        chip.innerHTML = `${p.emoji} ${p.name}`;
+        sichuanPairedDiv.appendChild(chip);
+      });
+      guangxiPkgs.forEach(p => {
+        const chip = document.createElement('div');
+        chip.className = 'paired-package';
+        chip.innerHTML = `${p.emoji} ${p.name}`;
+        guangxiPairedDiv.appendChild(chip);
+      });
+
+      // 检查是否全部配对
+      const allPaired = packages.every(p => p.paired);
+      if (allPaired && packagesVisible && !gameCompleted) {
+        gameCompleted = true;
+        celebrateAllDone();
+      } else if (!allPaired) {
+        gameCompleted = false;
+        Object.values(stationElements).forEach(el => el.classList.remove('celebrate'));
+      }
+    }
+
+    // ----- 庆祝完成 -----
+    function celebrateAllDone() {
+      Object.values(stationElements).forEach(el => el.classList.add('celebrate'));
+      
+      const heartEmojis = ['❤️', '🧡', '💛', '💚', '💙', '💜', '🩷', '💖'];
+      const starEmojis = ['⭐', '🌟', '✨', '💫', '🌠'];
+      
+      for (let i = 0; i < 28; i++) {
+        const isHeart = Math.random() > 0.5;
+        const floatEl = document.createElement('div');
+        floatEl.className = isHeart ? 'float-heart' : 'float-star';
+        floatEl.textContent = (isHeart ? heartEmojis : starEmojis)[Math.floor(Math.random() * (isHeart ? heartEmojis.length : starEmojis.length))];
+        floatEl.style.left = (10 + Math.random() * 80) + '%';
+        floatEl.style.bottom = (5 + Math.random() * 25) + 'vh';
+        floatEl.style.animationDuration = (2.2 + Math.random() * 2.5) + 's';
+        floatEl.style.fontSize = (2.2 + Math.random() * 2.5) + 'rem';
+        floatingArea.appendChild(floatEl);
+        setTimeout(() => { floatEl.remove(); }, 4000);
+      }
+      showEffectMessage('🎈🎉 全部送到！彩灯亮啦 🎉🎈', 2500);
+    }
+
+    // ----- 配对逻辑 -----
+    function attemptPair(stationId) {
+      if (!packagesVisible) {
+        showEffectMessage('👆 先点"快递车来啦"让包裹出现吧', 1300);
+        return;
+      }
+      if (gameCompleted) {
+        showEffectMessage('🎁 已经全部配对啦！点"重新开始"', 1200);
+        return;
+      }
+      if (!selectedPackageId) {
+        showEffectMessage('👆 先点一下包裹哟', 1000);
+        return;
+      }
+
+      const pkg = packages.find(p => p.id === selectedPackageId);
+      if (!pkg || pkg.paired) {
+        selectedPackageId = null;
+        renderAll();
+        return;
+      }
+
+      if (pkg.correctStation === stationId) {
+        // 成功
+        pkg.paired = true;
+        pkg.pairedStation = stationId;
+        triggerSuccessEffect(pkg);
+        selectedPackageId = null;
+        renderAll();
+      } else {
+        // 失败
+        showErrorEffect();
+        selectedPackageId = null;
+        renderAll();
+      }
+    }
+
+    // ----- 显示包裹（重置并展示）-----
+    function showPackagesAndReset() {
+      // 重置数据
+      packages = packagesData.map(p => ({ ...p, paired: false, pairedStation: null }));
+      selectedPackageId = null;
+      gameCompleted = false;
+      packagesVisible = true;
+      
+      Object.values(stationElements).forEach(el => el.classList.remove('celebrate'));
+      floatingArea.innerHTML = '';
+      
+      renderAll();
+      showEffectMessage('📦🚚 六个包裹来咯！快帮它们找家吧', 1800);
+    }
+
+    // ----- 重置游戏（也可重新隐藏？但按需求最好还是显示包裹）-----
+    function resetGameFull() {
+      // 重置并显示包裹（符合直觉：重新开始 = 出现新包裹）
+      showPackagesAndReset();
+    }
+
+    // ----- 绑定站点点击 -----
+    function bindStationEvents() {
+      stationElements.beijing.addEventListener('click', (e) => {
+        e.stopPropagation();
+        attemptPair('beijing');
+      });
+      stationElements.sichuan.addEventListener('click', (e) => {
+        e.stopPropagation();
+        attemptPair('sichuan');
+      });
+      stationElements.guangxi.addEventListener('click', (e) => {
+        e.stopPropagation();
+        attemptPair('guangxi');
+      });
+    }
+
+    // ----- 初始化（默认隐藏包裹）-----
+    function initGame() {
+      // 初始数据：未配对，不可见
+      packages = packagesData.map(p => ({ ...p, paired: false, pairedStation: null }));
+      packagesVisible = false;
+      selectedPackageId = null;
+      gameCompleted = false;
+      
+      Object.values(stationElements).forEach(el => el.classList.remove('celebrate'));
+      floatingArea.innerHTML = '';
+      
+      renderAll();
+      bindStationEvents();
+
+      // 大按钮：出现包裹
+      showPackagesBtn.addEventListener('click', () => {
+        showPackagesAndReset();
+      });
+
+      // 重置按钮
+      resetBtn.addEventListener('click', () => {
+        resetGameFull();
+      });
+    }
+
+    initGame();
+  })();
+</script>
+</body>
+</html>
